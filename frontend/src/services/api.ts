@@ -7,6 +7,7 @@ export interface PredictionRequest {
     price: number;
     discount_rate: number;
     campaign_duration_days: number;
+    channel: string;
 }
 
 export const getPrediction = async (data: PredictionRequest): Promise<PredictionResponse> => {

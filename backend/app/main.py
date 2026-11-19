@@ -53,7 +53,8 @@ def predict_revenue(request: PredictionRequest):
         "ad_spend": request.ad_spend,
         "price": request.price,
         "discount_rate": request.discount_rate,
-        "campaign_duration_days": request.campaign_duration_days
+        "campaign_duration_days": request.campaign_duration_days,
+        "channel": request.channel
     }])
     
     # 2. Execute the multi-variable math
