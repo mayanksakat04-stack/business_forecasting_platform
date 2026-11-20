@@ -1,11 +1,15 @@
-from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
+from typing import Annotated
+
 import joblib
 import pandas as pd
-from fastapi.middleware.cors import CORSMiddleware # <-- NEW IMPORT
-from app.core.database import engine, Base
-from app.models.sales import Sale
+from app.core.database import Base, engine, get_db
+from app.models.scenario import SavedScenario
 from app.schemas.predict import PredictionRequest, PredictionResponse
+from app.schemas.scenario import ScenarioCreate, ScenarioResponse
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 # 1. Establish Database Tables
 Base.metadata.create_all(bind=engine)
@@ -20,7 +24,7 @@ async def lifespan(app: FastAPI):
     try:
         # Load the frozen .joblib file into our global dictionary
         ml_models["sales_model"] = joblib.load("app/ml/models/sales_model.joblib")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"CRITICAL: Failed to load model. Error: {e}")
     
     yield  # The server accepts HTTP requests here
@@ -61,3 +65,19 @@ def predict_revenue(request: PredictionRequest):
     prediction = model.predict(input_data)
     
     return {"predicted_revenue": round(prediction[0], 2)}
+
+@app.post("/api/v1/scenarios", response_model=ScenarioResponse)
+def save_scenario(
+    scenario: ScenarioCreate,
+    db: Annotated[Session, Depends(get_db)],
+):
+    db_scenario = SavedScenario(**scenario.model_dump())
+    db.add(db_scenario)
+    db.commit()
+    db.refresh(db_scenario)
+    return db_scenario
+
+
+@app.get("/api/v1/scenarios", response_model=list[ScenarioResponse])
+def get_scenarios(db: Annotated[Session, Depends(get_db)]):
+    return db.query(SavedScenario).order_by(SavedScenario.created_at.desc()).all()

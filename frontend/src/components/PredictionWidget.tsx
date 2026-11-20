@@ -1,5 +1,5 @@
 "use client";
-import { getPrediction } from "@/services/api";
+import { getPrediction, saveScenario } from "@/services/api";
 import { useDebounce } from "@/hooks/useDebounce"; // Import your new mechanical gatekeeper
 import React, { useEffect } from "react";
 import { RevenueChart } from "./RevenueChart";
@@ -8,6 +8,7 @@ import { RevenueChart } from "./RevenueChart";
 interface PredictionWidgetProps {
     title?: string;
     onRevenueChange?: (revenue: number) => void;
+    onScenarioSaved?: () => void;
 }
 
 const CHANNELS = [
@@ -19,9 +20,12 @@ const CHANNELS = [
     "Influencer"
 ];
 
+
+
 export const PredictionWidget: React.FC<PredictionWidgetProps> = ({
     title = "Interactive Predictor",
-    onRevenueChange
+    onRevenueChange,
+    onScenarioSaved
 }) => {
     // 1. The Raw, Instant State (updates instantly as the slider moves)
     const [adSpend, setAdSpend] = React.useState<number>(500);
@@ -41,6 +45,9 @@ export const PredictionWidget: React.FC<PredictionWidgetProps> = ({
 
     const [channel, setChannel] = React.useState<string>("Social Media");
     const debouncedChannel = useDebounce(channel, 300);
+
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
+    const [saveMessage, setSaveMessage] = React.useState<string | null>(null);
     // 3. The Auto-Fetch Lifecycle
     // This useEffect watches the DEBOUNCED values, not the raw values.
     // It automatically calls FastAPI whenever the debounced values settle.
@@ -67,6 +74,32 @@ export const PredictionWidget: React.FC<PredictionWidgetProps> = ({
 
         fetchPrediction();
     }, [debouncedAdSpend, debouncedPrice, debouncedDiscount, debouncedDuration, debouncedChannel]);
+
+    const handleSave = async () => {
+        if (revenue === null) return;
+        setIsSaving(true);
+        setSaveMessage(null);
+
+        try {
+            await saveScenario({
+                name: `${title} - ${channel}`,
+                channel,
+                ad_spend: adSpend,
+                price,
+                discount_rate: discountRate,
+                campaign_duration_days: campaignDuration,
+                predicted_revenue: revenue,
+            });
+            setSaveMessage("Saved to database!");
+            if (onScenarioSaved) onScenarioSaved();
+            setTimeout(() => setSaveMessage(null), 2500);
+        } catch (err) {
+            console.error("Save Error:", err);
+            setSaveMessage("Failed to save.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <div className="flex flex-col w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800 text-gray-800 dark:text-gray-200">
@@ -142,6 +175,18 @@ export const PredictionWidget: React.FC<PredictionWidgetProps> = ({
                 </p>
             </div>
 
+            <button
+                onClick={handleSave}
+                disabled={isSaving || revenue === null}
+                className="mt-4 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-500 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+            >
+                {isSaving ? "Saving..." : "Save Scenario"}
+            </button>
+            {saveMessage && (
+                <p className="mt-2 text-center text-sm text-green-400 font-medium">
+                    {saveMessage}
+                </p>
+            )}
             <RevenueChart adSpend={adSpend} predictedRevenue={revenue} />
         </div>
     );

@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field
 from typing import Literal
+
+from pydantic import BaseModel, Field
+
+
 class PredictionRequest(BaseModel):
     ad_spend: float = Field(..., ge=0, description="Amount spent on advertising")
     price: float = Field(..., ge=0, description="Price of the product")
