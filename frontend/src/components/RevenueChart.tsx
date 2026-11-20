@@ -37,20 +37,25 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ adSpend, predictedRe
     ];
 
     return (
-        <div className="w-full h-72 p-4 mt-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-            <h3 className="mb-4 text-sm font-semibold text-center uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        <div className="w-full h-72 p-4 mt-6 bg-white/60 border border-gray-200/80 rounded-xl shadow-sm">
+            <h3 className="mb-4 text-xs font-bold text-center uppercase tracking-wider text-gray-700">
                 Financial Impact Breakdown
             </h3>
-            
-            {/* ResponsiveContainer automatically scales the chart to fit any screen size */}
+
             <ResponsiveContainer width="100%" height="85%">
                 <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
-                    <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                    <YAxis stroke="#9ca3af" fontSize={12} />
-                    <Tooltip 
+                    <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" opacity={0.6} />
+                    <XAxis dataKey="name" stroke="#111827" fontSize={12} fontWeight={600} />
+                    <YAxis stroke="#111827" fontSize={12} />
+                    <Tooltip
                         formatter={(value) => [`$${Number(value ?? 0).toFixed(2)}`, "Amount"]}
-                        contentStyle={{ backgroundColor: "#1f2937", borderColor: "#374151", color: "#fff" }}
+                        contentStyle={{
+                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                            borderColor: "#e2e8f0",
+                            borderRadius: "10px",
+                            color: "#111827",
+                            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+                        }}
                     />
                     <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
                         {data.map((entry, index) => (

@@ -23,39 +23,30 @@ export default function Home() {
     // Calculate the live difference between Strategy A and Strategy B
     const getComparisonStatus = () => {
         if (revenueA === null || revenueB === null) {
-            return { text: "Adjust sliders to compare strategies...", color: "bg-gray-700" };
+            return { text: "Adjust sliders to compare strategies...", color: "bg-white/80 text-gray-800 border-gray-200" };
         }
         const diff = Math.abs(revenueA - revenueB).toFixed(2);
 
         if (revenueA > revenueB) {
-            return {
-                text: `Strategy A wins by +$${diff}`,
-                color: "bg-green-600"
-            };
+            return { text: `Strategy A wins by +$${diff}`, color: "bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-transparent" };
         } else if (revenueB > revenueA) {
-            return {
-                text: `Strategy B wins by +$${diff}`,
-                color: "bg-blue-600"
-            };
+            return { text: `Strategy B wins by +$${diff}`, color: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent" };
         } else {
-            return {
-                text: "Both strategies generate identical predicted revenue",
-                color: "bg-gray-600"
-            };
+            return { text: "Both strategies generate identical predicted revenue", color: "bg-white/80 text-gray-800 border-gray-200" };
         }
     };
 
     const status = getComparisonStatus();
 
     return (
-        <main className="min-h-screen p-8 bg-gray-100 dark:bg-gray-900">
+        <main className="min-h-screen p-8 bg-gradient-to-br from-slate-200 via-gray-100 to-slate-200 text-gray-900">
             <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
-                    Business Strategy Simulator (A/B Mode)
+                <h1 className="text-3xl font-extrabold text-center text-black tracking-tight mb-6">
+                    Business Strategy Simulator
                 </h1>
 
                 {/* Live Comparison Banner */}
-                <div className={`p-4 mb-8 text-center text-white font-bold text-lg rounded-lg shadow-md transition-colors ${status.color}`}>
+                <div className={`p-4 mb-8 text-center font-bold text-lg rounded-2xl shadow-lg backdrop-blur-md border transition-all ${status.color}`}>
                     {status.text}
                 </div>
 
@@ -73,39 +64,39 @@ export default function Home() {
                     />
                 </div>
 
-                {/* Saved Scenarios History Table */}
-                <div className="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
+                {/* Saved Scenarios History Table (Glassmorphic) */}
+                <div className="mt-12 bg-white/70 backdrop-blur-md border border-white/80 rounded-2xl shadow-xl p-6">
+                    <h2 className="text-xl font-bold text-black mb-4">
                         Saved Scenarios (PostgreSQL)
                     </h2>
                     {savedScenarios.length === 0 ? (
-                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        <p className="text-gray-600 text-sm">
                             No scenarios saved yet. Adjust a strategy and click Save Scenario.
                         </p>
                     ) : (
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
-                                <thead className="text-xs uppercase bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                            <table className="w-full text-left text-sm text-gray-800">
+                                <thead className="text-xs uppercase bg-gray-200/70 text-black font-bold">
                                     <tr>
-                                        <th className="px-4 py-3">Scenario</th>
+                                        <th className="px-4 py-3 rounded-tl-lg">Scenario</th>
                                         <th className="px-4 py-3">Channel</th>
                                         <th className="px-4 py-3">Ad Spend</th>
                                         <th className="px-4 py-3">Price</th>
                                         <th className="px-4 py-3">Discount</th>
                                         <th className="px-4 py-3">Duration</th>
-                                        <th className="px-4 py-3 text-right">Predicted Rev</th>
+                                        <th className="px-4 py-3 text-right rounded-tr-lg">Predicted Rev</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {savedScenarios.map((item) => (
-                                        <tr key={item.id} className="border-b dark:border-gray-700">
-                                            <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{item.name}</td>
+                                        <tr key={item.id} className="border-b border-gray-200/80 hover:bg-white/60 transition-colors">
+                                            <td className="px-4 py-3 font-semibold text-black">{item.name}</td>
                                             <td className="px-4 py-3">{item.channel}</td>
                                             <td className="px-4 py-3">${item.ad_spend}</td>
                                             <td className="px-4 py-3">${item.price}</td>
                                             <td className="px-4 py-3">{(item.discount_rate * 100).toFixed(0)}%</td>
                                             <td className="px-4 py-3">{item.campaign_duration_days}d</td>
-                                            <td className="px-4 py-3 text-right font-bold text-green-500">
+                                            <td className="px-4 py-3 text-right font-bold text-emerald-600">
                                                 ${item.predicted_revenue.toFixed(2)}
                                             </td>
                                         </tr>

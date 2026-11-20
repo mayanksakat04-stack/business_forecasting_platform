@@ -102,16 +102,16 @@ export const PredictionWidget: React.FC<PredictionWidgetProps> = ({
     };
 
     return (
-        <div className="flex flex-col w-full max-w-md p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-            <h2 className="mb-6 text-xl font-semibold text-center">{title}</h2>
+        <div className="flex flex-col w-full max-w-md p-6 mx-auto bg-white/70 backdrop-blur-md border border-white/80 rounded-2xl shadow-xl text-gray-900">
+            <h2 className="mb-6 text-xl font-bold text-center text-black">{title}</h2>
 
             {/* Marketing Channel Dropdown */}
-            <div className="flex flex-col">
-                <label className="text-sm font-bold mb-2">Marketing Channel</label>
+            <div className="flex flex-col mb-5">
+                <label className="text-sm font-bold text-gray-900 mb-2">Marketing Channel</label>
                 <select
                     value={channel}
                     onChange={(e) => setChannel(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2.5 bg-white/80 border border-gray-300 rounded-xl text-sm text-black font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
                 >
                     {CHANNELS.map((ch) => (
                         <option key={ch} value={ch}>
@@ -120,73 +120,77 @@ export const PredictionWidget: React.FC<PredictionWidgetProps> = ({
                     ))}
                 </select>
             </div>
-            <div className="space-y-6">
+
+            <div className="space-y-5">
                 {/* Ad Spend Slider */}
                 <div className="flex flex-col">
-                    <label className="flex justify-between text-sm font-bold">
+                    <label className="flex justify-between text-sm font-bold text-gray-900">
                         <span>Ad Spend</span>
-                        <span className="text-blue-500">${adSpend}</span>
+                        <span className="text-blue-600">${adSpend}</span>
                     </label>
                     <input type="range" min="0" max="2000" step="50"
-                        className="w-full mt-2 accent-blue-500"
+                        className="w-full mt-2 accent-blue-600 cursor-pointer"
                         value={adSpend} onChange={(e) => setAdSpend(Number(e.target.value))} />
                 </div>
 
                 {/* Price Slider */}
                 <div className="flex flex-col">
-                    <label className="flex justify-between text-sm font-bold">
+                    <label className="flex justify-between text-sm font-bold text-gray-900">
                         <span>Product Price</span>
-                        <span className="text-blue-500">${price}</span>
+                        <span className="text-blue-600">${price}</span>
                     </label>
                     <input type="range" min="1" max="100" step="1"
-                        className="w-full mt-2 accent-blue-500"
+                        className="w-full mt-2 accent-blue-600 cursor-pointer"
                         value={price} onChange={(e) => setPrice(Number(e.target.value))} />
                 </div>
 
                 {/* Discount Rate Slider */}
                 <div className="flex flex-col">
-                    <label className="flex justify-between text-sm font-bold">
+                    <label className="flex justify-between text-sm font-bold text-gray-900">
                         <span>Discount Rate</span>
-                        <span className="text-blue-500">{(discountRate * 100).toFixed(0)}%</span>
+                        <span className="text-blue-600">{(discountRate * 100).toFixed(0)}%</span>
                     </label>
                     <input type="range" min="0" max="0.5" step="0.01"
-                        className="w-full mt-2 accent-blue-500"
+                        className="w-full mt-2 accent-blue-600 cursor-pointer"
                         value={discountRate} onChange={(e) => setDiscountRate(Number(e.target.value))} />
                 </div>
 
                 {/* Campaign Duration Slider */}
                 <div className="flex flex-col">
-                    <label className="flex justify-between text-sm font-bold">
+                    <label className="flex justify-between text-sm font-bold text-gray-900">
                         <span>Campaign Duration</span>
-                        <span className="text-blue-500">{campaignDuration} Days</span>
+                        <span className="text-blue-600">{campaignDuration} Days</span>
                     </label>
                     <input type="range" min="1" max="30" step="1"
-                        className="w-full mt-2 accent-blue-500"
+                        className="w-full mt-2 accent-blue-600 cursor-pointer"
                         value={campaignDuration} onChange={(e) => setCampaignDuration(Number(e.target.value))} />
                 </div>
             </div>
 
-            {error && <p className="mt-4 text-center text-red-500">{error}</p>}
+            {error && <p className="mt-4 text-center text-red-600 font-medium">{error}</p>}
 
-            <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                <p className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Predicted Revenue</p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+            {/* Predicted Revenue Box */}
+            <div className="mt-8 p-4 bg-white/60 border border-gray-200/80 rounded-xl text-center shadow-inner">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-600">Predicted Revenue</p>
+                <p className="text-3xl font-extrabold text-emerald-600 mt-1">
                     {revenue !== null ? `$${revenue.toLocaleString()}` : "Calculating..."}
                 </p>
             </div>
 
+            {/* Gradient Save Button */}
             <button
                 onClick={handleSave}
                 disabled={isSaving || revenue === null}
-                className="mt-4 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-500 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+                className="mt-4 w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
                 {isSaving ? "Saving..." : "Save Scenario"}
             </button>
             {saveMessage && (
-                <p className="mt-2 text-center text-sm text-green-400 font-medium">
+                <p className="mt-2 text-center text-sm text-emerald-600 font-semibold">
                     {saveMessage}
                 </p>
             )}
+
             <RevenueChart adSpend={adSpend} predictedRevenue={revenue} />
         </div>
     );
